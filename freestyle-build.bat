@@ -1,0 +1,3 @@
+@echo off
+echo Starting Maven build...
+call mvn clean install
