@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build jar') {
             steps {
-                sh 'mvn package'
+                bat 'mvn package'
             }
         }
 
@@ -16,10 +16,10 @@ pipeline {
             steps {
                 script {
                     echo "Building the Docker image..."
-                    WithCredentials([usernamePassword(credentialsId: 'docker-hub-credential', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh 'docker build -t anif0407/demo-app:jma-2.0 .'
-                        sh "echo \$PASS | docker login -u \$USER --password-stdin"
-                        sh 'docker push anif0407/demo-app.jma-2.0'
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        bat 'docker build -t anif0407/demo-app:jma-2.0 .'
+                        bat "docker login -u %USER% -p %PASS%"
+                        bat 'docker push anif0407/demo-app:jma-2.0'
                     }
                 }
             }
