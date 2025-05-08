@@ -1,36 +1,35 @@
 pipeline {
     agent any
     
-    tools {
-        maven 'maven-3.9'
-    }
-    
     stages {
-        stage('Build jar') {
-            steps {
-                bat 'mvn package'
-            }
-        }
-
-        stage('Build Image') {
+        stage('Test') {
             steps {
                 script {
-                    echo "Building the Docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        bat 'docker build -t anif0407/demo-app:jma-2.0 .'
-                        bat "docker login -u %USER% -p %PASS%"
-                        bat 'docker push anif0407/demo-app:jma-2.0'
-                    }
+                    echo "Testing the application..."
+                    echo "Executing pipline for branch ${BRANCH_NAME}"
                 }
             }
         }
 
+        stage('Build') {
+            when {
+                expression { BRANCH_NAME == 'main' }
+            }
+            steps {
+                script {
+                    echo "Building the application..."
+                }
+            }
+        }
         stage('Deploy') {
+            when {
+                expression { BRANCH_NAME == 'main' }
+            }
             steps {
                 script {
                     echo "Deploying the application..."
                 }
-            }    
+            }
         }
     }
 }
